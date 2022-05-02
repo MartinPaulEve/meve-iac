@@ -3,9 +3,15 @@ This repository contains the terraform files to provision my [personal website](
 
 ![Martin Paul Eve](https://eve.gd/images/header_new.jpg)
 
-![license](https://img.shields.io/github/license/martinpauleve/meve-iac)
+![license](https://img.shields.io/github/license/martinpauleve/meve-iac) ![activity](https://img.shields.io/github/last-commit/MartinPaulEve/meve-iac) 
 
-## Features
+![AWS](https://img.shields.io/badge/AWS-%23FF9900.svg?style=for-the-badge&logo=amazon-aws&logoColor=white) ![Git](https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white)
+ ![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)
+![Linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black)
+![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54) ![Terraform](https://img.shields.io/badge/terraform-%235835CC.svg?style=for-the-badge&logo=terraform&logoColor=white) 
+
+
+# Features
 * Static serving from an S3 bucket
 * Certificate management
 * Enforced SSL redirection
@@ -14,7 +20,7 @@ This repository contains the terraform files to provision my [personal website](
 * Canonical redirects from www to bare domain
 * Domain-based to path-based redirects (e.g. books.eve.gd -> eve.gd/books/)
 
-## Setup and Running
+# Setup and Running
 First, edit terraform.tfvars to contain the necessary information:
 
     domain_name = "eve.gd"
@@ -51,6 +57,8 @@ Then:
     terraform init
     terraform apply
 
+# Details
+
 ## Certificates
 This setup configures SSL certificates using AWS Certificate Manager. It uses DNS-based validation to authenticate the certificates. This can require a manual intervention the first time it's setup.
 
@@ -74,10 +82,14 @@ There are three Cloudfront distributions, only one of which will ever see seriou
 * The www redirect
 * the books redirect
 
-## Credits / Third-Party Software
+# Future Improvements
+A core improvement that's not currently in place would be to replicate the S3 buckets to different regions/availability zones and then implement Cloudfront failover to an S3 group. 
+
+# Credits / Third-Party Software
 
 * [Terraform](https://www.terraform.io/) by Hashicorp
 * Modified version of [terraform-aws-lambda-at-edge](https://github.com/transcend-io/terraform-aws-lambda-at-edge) by benjamint-bsquare. The modifications force the Lambda function into the us-east-1 region as this is obligatory for Cloudfront Lamda@Edge functions.
+* [Git](https://git-scm.com/) from Linus Torvalds _et al_.
 * [.gitignore](https://github.com/github/gitignore) from Github
 
-&copy; Martin Paul Eve, 2022. Released under the terms of [the MIT License](LICENSE).
+&copy; [Martin Paul Eve](mailto:martin@eve.gd), 2022. Released under the terms of [the MIT License](LICENSE).
