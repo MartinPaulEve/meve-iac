@@ -87,9 +87,10 @@ A core improvement that's not currently in place would be to replicate the S3 bu
 
 # Credits / Third-Party Software
 
-* [Terraform](https://www.terraform.io/) by Hashicorp
+* [Terraform](https://www.terraform.io/) by Hashicorp.
 * Modified version of [terraform-aws-lambda-at-edge](https://github.com/transcend-io/terraform-aws-lambda-at-edge) by benjamint-bsquare. The modifications force the Lambda function into the us-east-1 region as this is obligatory for Cloudfront Lamda@Edge functions.
 * [Git](https://git-scm.com/) from Linus Torvalds _et al_.
-* [.gitignore](https://github.com/github/gitignore) from Github
+* [.gitignore](https://github.com/github/gitignore) from Github.
+* The headshot photograph is courtesy of [Lianne de Mello](https://twitter.com/liannedemello). 
 
 &copy; [Martin Paul Eve](mailto:martin@eve.gd), 2022. Released under the terms of [the MIT License](LICENSE).
