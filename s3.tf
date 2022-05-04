@@ -1,3 +1,42 @@
+# block public access
+resource "aws_s3_bucket_public_access_block" "root_block" {
+  bucket = aws_s3_bucket.root_bucket.id
+
+  block_public_acls   = true
+  block_public_policy = true
+
+  ignore_public_acls = true
+}
+
+resource "aws_s3_bucket_public_access_block" "www_block" {
+  bucket = aws_s3_bucket.www_bucket.id
+
+  block_public_acls   = true
+  block_public_policy = true
+
+  ignore_public_acls = true
+}
+
+resource "aws_s3_bucket_public_access_block" "books_block" {
+  bucket = aws_s3_bucket.books_bucket.id
+
+  block_public_acls   = true
+  block_public_policy = true
+
+  ignore_public_acls = true
+}
+
+resource "aws_s3_bucket_public_access_block" "artifact_block" {
+  bucket = aws_s3_bucket.artifact_bucket.id
+
+  block_public_acls   = true
+  block_public_policy = true
+
+  ignore_public_acls = true
+
+  provider = aws.acm_provider
+}
+
 # S3 bucket for build artifacts.
 resource "aws_s3_bucket" "artifact_bucket" {
   bucket = var.s3_artifact_bucket
@@ -34,7 +73,7 @@ resource "aws_s3_bucket_policy" "web_bucket_policy" {
 
 resource "aws_s3_bucket_acl" "web_bucket_acl" {
   bucket = aws_s3_bucket.www_bucket.id
-  acl    = "public-read"
+  acl    = "private"
 }
 
 resource "aws_s3_bucket_cors_configuration" "cors_setup" {
@@ -56,6 +95,7 @@ resource "aws_s3_bucket_cors_configuration" "cors_setup_books" {
     max_age_seconds = 3000
   }
 }
+
 
 resource "aws_s3_bucket_website_configuration" "bucket_web_config" {
   bucket = aws_s3_bucket.root_bucket.bucket
@@ -97,7 +137,7 @@ data "aws_iam_policy_document" "s3_read_permissions" {
     sid = "PublicReadGetObject"
 
     principals {
-      identifiers = ["*"]
+      identifiers = [aws_cloudfront_origin_access_identity.oai.iam_arn]
       type        = "AWS"
     }
 
@@ -123,7 +163,7 @@ data "aws_iam_policy_document" "s3_read_permissions_root" {
     sid = "PublicReadGetObject"
 
     principals {
-      identifiers = ["*"]
+      identifiers = [aws_cloudfront_origin_access_identity.oai.iam_arn]
       type        = "AWS"
     }
 
@@ -140,7 +180,7 @@ data "aws_iam_policy_document" "s3_read_permissions_root" {
 
 resource "aws_s3_bucket_acl" "root_bucket_acl" {
   bucket = aws_s3_bucket.root_bucket.id
-  acl    = "public-read"
+  acl    = "private"
 }
 
 # S3 bucket for books.
@@ -157,7 +197,7 @@ resource "aws_s3_bucket_policy" "books_bucket_policy" {
 
 resource "aws_s3_bucket_acl" "books_bucket_acl" {
   bucket = aws_s3_bucket.books_bucket.id
-  acl    = "public-read"
+  acl    = "private"
 }
 
 data "aws_iam_policy_document" "s3_read_permissions_books" {
@@ -167,7 +207,7 @@ data "aws_iam_policy_document" "s3_read_permissions_books" {
     sid = "PublicReadGetObjectBooks"
 
     principals {
-      identifiers = ["*"]
+      identifiers = [aws_cloudfront_origin_access_identity.oai.iam_arn]
       type        = "AWS"
     }
 
