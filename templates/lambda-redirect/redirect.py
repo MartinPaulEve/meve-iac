@@ -1,3 +1,6 @@
+from uuid import UUID
+
+
 def redirect(url):
     response = {
         'status': '302',
@@ -11,6 +14,15 @@ def redirect(url):
     }
 
     return response
+
+
+def is_valid_uuid(uuid_to_test, version=4):
+
+    try:
+        uuid_obj = UUID(uuid_to_test[-36:], version=version)
+    except ValueError:
+        return False
+    return str(uuid_obj) == uuid_to_test
 
 
 def lambda_handler(event, context):
@@ -37,8 +49,15 @@ def lambda_handler(event, context):
 
     # handle URL redirects
     if len(uri) > 1:
-        uri_plain = uri[1:] if uri.startswith('/') else uri
-        uri_plain = uri_plain[:-1] if uri_plain.endswith('/') else uri_plain
+        uri_plain = plain_uri(uri)
+
+        final_path = uri_plain.split('/')[-1]
+
+        if final_path.isnumeric():
+            return request
+
+        if is_valid_uuid(final_path):
+            return request
 
         if uri_plain in redirects:
             return redirect(redirects[uri_plain])
@@ -67,3 +86,9 @@ def lambda_handler(event, context):
             return redirect('https://{0}/{1}/'.format(domain, uri))
 
     return request
+
+
+def plain_uri(uri):
+    uri_plain = uri[1:] if uri.startswith('/') else uri
+    uri_plain = uri_plain[:-1] if uri_plain.endswith('/') else uri_plain
+    return uri_plain
