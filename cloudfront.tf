@@ -2,8 +2,8 @@
 resource "aws_cloudfront_distribution" "www_s3_distribution" {
 
   origin {
-    domain_name = aws_s3_bucket.www_bucket.bucket_regional_domain_name
-    origin_id   = "S3-www.${var.bucket_name}"
+    domain_name = aws_s3_bucket.root_bucket.bucket_regional_domain_name
+    origin_id   = "S3-.${var.bucket_name}"
 
     s3_origin_config {
       origin_access_identity = aws_cloudfront_origin_access_identity.oai.cloudfront_access_identity_path
@@ -27,14 +27,14 @@ resource "aws_cloudfront_distribution" "www_s3_distribution" {
   default_cache_behavior {
 
     lambda_function_association {
-      event_type   = "viewer-request"
+      event_type   = "origin-request"
       include_body = false
       lambda_arn   = module.redirect_header_lambda.arn
     }
 
     allowed_methods  = ["GET", "HEAD"]
     cached_methods   = ["GET", "HEAD"]
-    target_origin_id = "S3-www.${var.bucket_name}"
+    target_origin_id = "S3-.${var.bucket_name}"
 
     forwarded_values {
       query_string = false
@@ -42,6 +42,8 @@ resource "aws_cloudfront_distribution" "www_s3_distribution" {
       cookies {
         forward = "none"
       }
+
+      headers = ["Origin", "CloudFront-Forwarded-Proto"]
     }
 
     viewer_protocol_policy = "redirect-to-https"
@@ -93,7 +95,7 @@ resource "aws_cloudfront_distribution" "root_s3_distribution" {
   default_cache_behavior {
 
     lambda_function_association {
-      event_type   = "viewer-request"
+      event_type   = "origin-request"
       include_body = false
       lambda_arn   = module.redirect_header_lambda.arn
     }
@@ -109,7 +111,7 @@ resource "aws_cloudfront_distribution" "root_s3_distribution" {
         forward = "none"
       }
 
-      headers = ["Origin"]
+      headers = ["Origin", "CloudFront-Forwarded-Proto"]
     }
 
     viewer_protocol_policy = "redirect-to-https"
@@ -148,8 +150,8 @@ module "redirect_header_lambda" {
 # Cloudfront S3 for redirect from books
 resource "aws_cloudfront_distribution" "books_s3_distribution" {
   origin {
-    domain_name = aws_s3_bucket.books_bucket.bucket_regional_domain_name
-    origin_id   = "S3-books.${var.bucket_name}"
+    domain_name = aws_s3_bucket.root_bucket.bucket_regional_domain_name
+    origin_id   = "S3-.${var.bucket_name}"
 
 
     s3_origin_config {
@@ -172,7 +174,7 @@ resource "aws_cloudfront_distribution" "books_s3_distribution" {
 
     allowed_methods  = ["GET", "HEAD"]
     cached_methods   = ["GET", "HEAD"]
-    target_origin_id = "S3-books.${var.bucket_name}"
+    target_origin_id = "S3-.${var.bucket_name}"
 
     forwarded_values {
       query_string = true
@@ -181,7 +183,7 @@ resource "aws_cloudfront_distribution" "books_s3_distribution" {
         forward = "none"
       }
 
-      headers = ["Origin"]
+      headers = ["Origin", "CloudFront-Forwarded-Proto"]
     }
 
     viewer_protocol_policy = "redirect-to-https"

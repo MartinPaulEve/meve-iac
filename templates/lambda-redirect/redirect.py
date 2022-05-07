@@ -32,6 +32,8 @@ def lambda_handler(event, context):
 
     host = headers['host'][0]['value']
     uri = request['uri']
+    # this _should_ work, but for some reason the value isn't always there
+    # scheme = headers['cloudfront-forwarded-proto'][0]['value']
 
     # handle URL redirects
     if len(uri) > 1:
@@ -45,7 +47,7 @@ def lambda_handler(event, context):
         return redirect('https://{0}/books/'.format(domain))
 
     if host.startswith('www'):
-        # this is a non-canonical site
+        # this is a non-canonical site or non-HTTP
         return redirect('https://{0}{1}'.format(domain, uri))
 
     # redirect feed
@@ -58,6 +60,10 @@ def lambda_handler(event, context):
     # handle subdirectories that have no index
     if uri.endswith('/'):
         request['uri'] = request['uri'] + 'index.html'
-        print('Rewrote URI to {0} on {1}'.format(request['uri'], host))
+    elif '.' not in uri:
+        if uri.startswith('/'):
+            return redirect('https://{0}{1}/'.format(domain, uri))
+        else:
+            return redirect('https://{0}/{1}/'.format(domain, uri))
 
     return request

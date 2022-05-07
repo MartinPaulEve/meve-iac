@@ -60,14 +60,10 @@ Then:
 This setup configures SSL certificates using AWS Certificate Manager. It uses DNS-based validation to authenticate the certificates. This can require a manual intervention the first time it's setup.
 
 ## S3 / Storage
-This setup creates four S3 buckets:
+This setup creates two S3 buckets:
 
 * The site itself (root_bucket)
-* The www subdomain redirect (www_bucket)
-* The books subdomain redirect (books_bucket)
 * The artifact bucket (artifact_bucket) for Lambda@Edge function builds
-
-Future versions could remove the dependence on the www and books buckets as this can be handled by the Lambda@Edge function.
 
 ## DNS / Route 53
 The Route 53 configuration is designed for my Protonmail setup and contains MX, DMARC, and SPF records to allow this. A "gotcha" when spinning up fresh infrastructure is that you need to update the nameservers on the domain, even if the domain is registered with Route 53. It might be possible to update these automatically.
@@ -78,6 +74,9 @@ There are three Cloudfront distributions, only one of which will ever see seriou
 * The main site
 * The www redirect
 * the books redirect
+
+## Lambda@Edge Redirection
+Redirection is handled by a Lambda@Edge function tied to the "origin-request". This means that redirects are cached (whereas "viewer-request" is executed every time.) It is possible to define a redirect-to-https block in Cloudfront but we can also get this control in the Lambda function, which will run anyway.
 
 # Future Improvements
 A core improvement that's not currently in place would be to replicate the S3 buckets to different regions/availability zones and then implement Cloudfront failover to an S3 group. 
