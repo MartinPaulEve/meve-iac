@@ -17,6 +17,9 @@ This repository contains the terraform files to provision my [personal website](
 * Canonical redirects from www to bare domain
 * Domain-based to path-based redirects (e.g. books.eve.gd -> eve.gd/books/)
 
+# Intended Infrastructure
+<img src="docs/resource_map.png?raw=true" alt="Infrastructure resource map"/>
+
 # Setup and Running
 First, edit terraform.tfvars to contain the necessary information:
 
@@ -87,6 +90,7 @@ A core improvement that's not currently in place would be to replicate the S3 bu
 * Modified version of [terraform-aws-lambda-at-edge](https://github.com/transcend-io/terraform-aws-lambda-at-edge) by benjamint-bsquare. The modifications force the Lambda function into the us-east-1 region as this is obligatory for Cloudfront Lamda@Edge functions.
 * [Git](https://git-scm.com/) from Linus Torvalds _et al_.
 * [.gitignore](https://github.com/github/gitignore) from Github.
-* The headshot photograph is courtesy of [Lianne de Mello](https://twitter.com/liannedemello). 
+* The headshot photograph is courtesy of [Lianne de Mello](https://twitter.com/liannedemello).
+* The infrastructure diagram was created with [CloudCraft](https://app.cloudcraft.co/).
 
 &copy; [Martin Paul Eve](mailto:martin@eve.gd), 2022. Released under the terms of [the MIT License](LICENSE).
