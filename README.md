@@ -16,6 +16,7 @@ This repository contains the terraform files to provision my [personal website](
 * Redirection handled by Lambda@Edge Python
 * Canonical redirects from www to bare domain
 * Domain-based to path-based redirects (e.g. books.eve.gd -> eve.gd/books/)
+* Second domain (martineve.com) also under management
 
 # Intended Infrastructure
 <img src="docs/resource_map.png?raw=true" alt="Infrastructure resource map"/>
@@ -24,6 +25,7 @@ This repository contains the terraform files to provision my [personal website](
 First, edit terraform.tfvars to contain the necessary information:
 
     domain_name = "eve.gd"
+    secondary_domain_name = "martineve.com"
     bucket_name = "eve.gd"
     
     common_tags = {
