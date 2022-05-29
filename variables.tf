@@ -16,3 +16,8 @@ variable "s3_artifact_bucket" {
   type        = string
   description = "The artifact bucket name"
 }
+
+variable "secondary_domain_name" {
+  type        = string
+  description = "The secondary domain name for the website."
+}

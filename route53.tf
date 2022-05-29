@@ -146,6 +146,25 @@ resource "aws_route53_record" "cert_validation" {
   zone_id         = each.value.zone_id
 }
 
+resource "aws_route53_record" "cert_validation-secondary" {
+  for_each = {
+    for dvo in aws_acm_certificate.ssl_certificate-secondary.domain_validation_options : dvo.domain_name => {
+      name    = dvo.resource_record_name
+      record  = dvo.resource_record_value
+      type    = dvo.resource_record_type
+      zone_id = aws_route53_zone.secondary.zone_id
+      allow_overwrite = true
+    }
+  }
+
+  allow_overwrite = true
+  name            = each.value.name
+  records         = [each.value.record]
+  ttl             = 60
+  type            = each.value.type
+  zone_id         = each.value.zone_id
+}
+
 resource "aws_route53_record" "redirect-www" {
   zone_id = aws_route53_zone.main.zone_id
   name    = "books.${var.domain_name}"
@@ -155,3 +174,98 @@ resource "aws_route53_record" "redirect-www" {
   records = ["${var.domain_name}"]
 }
 
+# secondary domain
+# Route 53 for domain
+resource "aws_route53_zone" "secondary" {
+  name = var.secondary_domain_name
+  tags = var.common_tags
+}
+
+resource "aws_route53_record" "root-a-secondary" {
+  zone_id = aws_route53_zone.secondary.zone_id
+  name    = var.secondary_domain_name
+  type    = "A"
+
+  alias {
+    name                   = aws_cloudfront_distribution.root_s3_distribution.domain_name
+    zone_id                = aws_cloudfront_distribution.root_s3_distribution.hosted_zone_id
+    evaluate_target_health = false
+  }
+}
+
+resource "aws_route53_record" "www-a-secondary" {
+  zone_id = aws_route53_zone.secondary.zone_id
+  name    = "www.${var.secondary_domain_name}"
+  type    = "A"
+
+  alias {
+    name                   = aws_cloudfront_distribution.www_s3_distribution.domain_name
+    zone_id                = aws_cloudfront_distribution.www_s3_distribution.hosted_zone_id
+    evaluate_target_health = false
+  }
+}
+
+resource "aws_route53_record" "mx-secondary" {
+  name    = ""
+  type    = "MX"
+  zone_id = aws_route53_zone.secondary.zone_id
+  ttl     = "300"
+  records = [
+    "10 mail.protonmail.ch",
+    "20 mailsec.protonmail.ch"
+  ]
+}
+
+# protonmail DMARC
+resource "aws_route53_record" "protonmail_dmarc-secondary" {
+  zone_id = aws_route53_zone.secondary.zone_id
+  name    = "_dmarc"
+  type    = "TXT"
+  ttl     = "300"
+
+  records = ["v=DMARC1; p=none; rua=mailto:martin@martineve.com"]
+}
+
+# protonmail DKIM
+resource "aws_route53_record" "DKIM-1-secondary" {
+  zone_id = aws_route53_zone.secondary.zone_id
+  name    = "protonmail._domainkey"
+  type    = "CNAME"
+  ttl     = "5"
+
+  records = ["protonmail.domainkey.dvxkmlbfy7jgoykrk7puc5ckufoyrieefzvjvupnpyedawhxzj3pa.domains.proton.ch."]
+}
+
+resource "aws_route53_record" "DKIM-2-secondary" {
+  zone_id = aws_route53_zone.secondary.zone_id
+  name    = "protonmail2._domainkey"
+  type    = "CNAME"
+  ttl     = "5"
+
+  records = [
+    "protonmail2.domainkey.dvxkmlbfy7jgoykrk7puc5ckufoyrieefzvjvupnpyedawhxzj3pa.domains.proton.ch."
+  ]
+}
+
+resource "aws_route53_record" "DKIM-3-secondary" {
+  zone_id = aws_route53_zone.secondary.zone_id
+  name    = "protonmail3._domainkey"
+  type    = "CNAME"
+  ttl     = "5"
+
+  records = [
+    "protonmail3.domainkey.dvxkmlbfy7jgoykrk7puc5ckufoyrieefzvjvupnpyedawhxzj3pa.domains.proton.ch."
+  ]
+}
+
+resource "aws_route53_record" "protonmail_verify-secondary" {
+  zone_id = aws_route53_zone.secondary.zone_id
+  name    = ""
+  type    = "TXT"
+  ttl     = "300"
+
+  records = [
+    "protonmail-verification=a23684144da1ffa5443523b22a8914d667a66873",
+    "v=spf1 include:_spf.protonmail.ch mx ~all"
+  ]
+}
