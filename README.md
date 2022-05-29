@@ -17,6 +17,7 @@ This repository contains the terraform files to provision my [personal website](
 * Canonical redirects from www to bare domain
 * Domain-based to path-based redirects (e.g. books.eve.gd -> eve.gd/books/)
 * Second domain (martineve.com) also under management
+* S3 backend with KMS encryption and replication
 
 # Intended Infrastructure
 <img src="docs/resource_map.png?raw=true" alt="Infrastructure resource map"/>
@@ -53,6 +54,8 @@ Next, ensure that your .aws folder in your home directory has a working configur
     aws_secret_access_key=YOUR_SECRET_KEY_HERE
 
 Alternatively, you can export these as environment variables.
+
+Edit main.tf temporarily to remove the S3 backend configuration so that you can create the infrastructure first. You can re-insert this to use the remote backend after the first run. This is to handle the [chicken-and-egg problem of state management](https://blog.gruntwork.io/how-to-manage-terraform-state-28f5697e68fa).
 
 Then:
 
